@@ -30,6 +30,4 @@ public class MovieResponseDto implements Serializable {
     private String movieImageUrl;
     private String movieTrailerUrl;
 
-    private List<Actor> actors;
-
 }

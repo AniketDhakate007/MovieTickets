@@ -11,9 +11,9 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
-
-    private final AuthenticationManager authenticationManager;
-    private final UserService userService;
+//
+//    private final AuthenticationManager authenticationManager;
+//    private final UserService userService;
     @Override
     public AuthDTO login(LoginDTO loginDTO) {
         return null;

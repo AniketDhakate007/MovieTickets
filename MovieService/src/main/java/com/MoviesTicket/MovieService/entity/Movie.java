@@ -15,10 +15,12 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 @Table(name = "movie")
+@Entity
 public class Movie {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "movie_id")
     private int movieId;
 
     private String movieName;
