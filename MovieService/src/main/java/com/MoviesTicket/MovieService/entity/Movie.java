@@ -1,6 +1,5 @@
 package com.MoviesTicket.MovieService.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -28,7 +27,7 @@ public class Movie {
     private int duration;
     private Date releaseDate;
     private boolean isDisplay;
-    private String movieTrailerUrl;
+    private String trailerUrl;
 
     @ManyToOne
     @JoinColumn(name = "category_id")

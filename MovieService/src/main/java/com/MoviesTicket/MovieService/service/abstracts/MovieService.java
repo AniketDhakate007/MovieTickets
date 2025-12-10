@@ -14,7 +14,5 @@ public interface MovieService {
 
     MovieResponseDto getMovieByMovieId(int movieId);
 
-    Movie getMovieById(int movieId);
-
     Movie addMovie(MovieRequestDto movieRequestDto);
 }

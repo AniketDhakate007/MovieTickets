@@ -5,14 +5,13 @@ import com.MoviesTicket.MovieService.entity.Movie;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+@Repository
 public interface MovieDao extends JpaRepository<Movie, Integer> {
 
-    // ----------------------------
-    // 1. All Displaying Movies
-    // ----------------------------
     @Query("""
         select new com.MoviesTicket.MovieService.entity.DTO.MovieResponseDto(
             m.movieId,
@@ -24,7 +23,7 @@ public interface MovieDao extends JpaRepository<Movie, Integer> {
             c.categoryId,
             c.categoryName,
             i.imageUrl,
-            m.movieTrailerUrl
+            m.trailerUrl
         )
         from Movie m
         inner join m.category c
@@ -34,10 +33,6 @@ public interface MovieDao extends JpaRepository<Movie, Integer> {
     """)
     List<MovieResponseDto> getAllDisplayingMovies();
 
-
-    // ----------------------------
-    // 2. Coming Soon Movies
-    // ----------------------------
     @Query("""
         select new com.MoviesTicket.MovieService.entity.DTO.MovieResponseDto(
             m.movieId,
@@ -49,7 +44,7 @@ public interface MovieDao extends JpaRepository<Movie, Integer> {
             c.categoryId,
             c.categoryName,
             i.imageUrl,
-            m.movieTrailerUrl
+            m.trailerUrl
         )
         from Movie m
         inner join m.category c
@@ -59,10 +54,6 @@ public interface MovieDao extends JpaRepository<Movie, Integer> {
     """)
     List<MovieResponseDto> getAllComingSoonMovies();
 
-
-    // ----------------------------
-    // 3. Get Movie By ID
-    // ----------------------------
     @Query("""
         select new com.MoviesTicket.MovieService.entity.DTO.MovieResponseDto(
             m.movieId,
@@ -74,7 +65,7 @@ public interface MovieDao extends JpaRepository<Movie, Integer> {
             c.categoryId,
             c.categoryName,
             i.imageUrl,
-            m.movieTrailerUrl
+            m.trailerUrl 
         )
         from Movie m
         inner join m.category c
@@ -82,7 +73,6 @@ public interface MovieDao extends JpaRepository<Movie, Integer> {
         where m.movieId = :movieId
     """)
     MovieResponseDto getMovieById(@Param("movieId") int movieId);
-
 
     Movie getMovieByMovieId(int movieId);
 }

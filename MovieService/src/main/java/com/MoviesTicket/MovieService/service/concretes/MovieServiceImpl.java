@@ -1,6 +1,7 @@
 package com.MoviesTicket.MovieService.service.concretes;
 
 import com.MoviesTicket.MovieService.dao.MovieDao;
+import com.MoviesTicket.MovieService.entity.Category;
 import com.MoviesTicket.MovieService.entity.DTO.MovieRequestDto;
 import com.MoviesTicket.MovieService.entity.DTO.MovieResponseDto;
 import com.MoviesTicket.MovieService.entity.Movie;
@@ -26,21 +27,26 @@ public class MovieServiceImpl implements MovieService {
 
     @Override
     public List<MovieResponseDto> getAllComingSoonMovies() {
-        return null;
+        return movieDao.getAllComingSoonMovies();
     }
 
     @Override
     public MovieResponseDto getMovieByMovieId(int movieId) {
-        return null;
-    }
-
-    @Override
-    public Movie getMovieById(int movieId) {
-        return null;
+        return movieDao.getMovieById(movieId);
     }
 
     @Override
     public Movie addMovie(MovieRequestDto movieRequestDto) {
+//
+//        Movie movie = Movie.builder()
+//                .movieName(movieRequestDto.getMovieName())
+//                .description(movieRequestDto.getDescription())
+//                .duration(movieRequestDto.getDuration())
+//                .releaseDate(movieRequestDto.getReleaseDate())
+//                .isDisplay(movieRequestDto.getIsInVision())
+//                .trailerUrl(movieRequestDto.getTrailerUrl())
+//                .build();
+//        return movieDao.save(movie);
         return null;
     }
 }
