@@ -1,9 +1,11 @@
 package com.MoviesTicket.MovieService.entity.DTO;
 
+import com.MoviesTicket.MovieService.entity.Actor;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -21,5 +23,9 @@ public class MovieResponseDto implements Serializable {
 
     private String imageUrl;
     private String trailerUrl;
+
+    private String directorName;
+
+//    private List<Actor> actors;
 
 }

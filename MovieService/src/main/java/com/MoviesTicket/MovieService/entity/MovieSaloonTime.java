@@ -3,31 +3,29 @@ package com.MoviesTicket.MovieService.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.io.Serializable;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "actor")
-@Builder
-public class Actor implements Serializable {
+@Table(name = "movie_saloon_time")
+public class MovieSaloonTime {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int actorId;
+    private int id;
 
-    private String actorName;
+    private String movieBeginTime;
 
     @ManyToOne
+    @JoinColumn(name = "saloon_id")
+    @JsonIgnore
+    private Saloon saloon;
+
+    @ManyToOne
+    @JoinColumn(name = "movie_id")
     @JsonIgnore
     private Movie movie;
-
-    @OneToOne(mappedBy = "actor")
-    @JoinColumn(name = "actor_image_id")
-    private ActorImage actorImage;
 }

@@ -8,26 +8,27 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "actor")
+@Table(name = "city")
 @Builder
-public class Actor implements Serializable {
+public class City implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int actorId;
+    private int cityId;
 
-    private String actorName;
+    private String cityName;
+
+    @OneToMany(mappedBy = "city")
+    private List<Saloon> saloon;
 
     @ManyToOne
+    @JoinColumn(name = "movie_Id")
     @JsonIgnore
     private Movie movie;
-
-    @OneToOne(mappedBy = "actor")
-    @JoinColumn(name = "actor_image_id")
-    private ActorImage actorImage;
 }

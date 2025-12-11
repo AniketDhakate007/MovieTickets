@@ -3,38 +3,43 @@ package com.MoviesTicket.MovieService.service.concretes;
 import com.MoviesTicket.MovieService.dao.ActorDao;
 import com.MoviesTicket.MovieService.entity.Actor;
 import com.MoviesTicket.MovieService.entity.DTO.ActorRequestDto;
+import com.MoviesTicket.MovieService.entity.Movie;
 import com.MoviesTicket.MovieService.service.abstracts.ActorService;
+import com.MoviesTicket.MovieService.service.abstracts.MovieService;
 import lombok.RequiredArgsConstructor;
+import org.apache.kafka.common.message.ShareFetchResponseDataJsonConverter;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
-
+@RequiredArgsConstructor
 public class ActorServiceImpl implements ActorService{
 
     private final ActorDao actorDao;
-
-    public ActorServiceImpl(ActorDao actorDao) {
-        this.actorDao = actorDao;
-    }
+    private final MovieService movieService;
 
     @Override
     public List<Actor> getActorsByMovieId(int movieId) {
-        return null;
+        return actorDao.getActorByMovieMovieId(movieId);
     }
 
     @Override
     public List<Actor> getAll() {
-        return null;
+        return actorDao.findAll();
     }
 
     @Override
     public void addActors(ActorRequestDto actorRequestDto) {
-        return;
+        Movie movie = movieService.getMovieById(actorRequestDto.getMovieId());
+
+        for (String actorName: actorRequestDto.getActorNameList()){
+            Actor actor = Actor.builder()
+                    .actorName(actorName)
+                    .movie(movie)
+                    .build();
+            actorDao.save(actor);
+        }
     }
 
-    public ActorDao getActorDao() {
-        return actorDao;
-    }
 }

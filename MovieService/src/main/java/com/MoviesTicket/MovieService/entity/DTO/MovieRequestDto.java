@@ -1,5 +1,6 @@
 package com.MoviesTicket.MovieService.entity.DTO;
 
+import jakarta.persistence.criteria.CriteriaBuilder;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -21,6 +22,8 @@ public class MovieRequestDto {
     private String trailerUrl;
     private Boolean isInVision;
     private int categoryId;
+    private int directorId;
     private List<Integer> actors;
+    private List<Integer> cities;
     private String userAccessToken;
 }

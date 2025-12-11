@@ -36,6 +36,17 @@ public class Movie {
     @OneToOne(mappedBy = "movie")
     private MovieImage image;
 
+    @ManyToOne
+    @JoinColumn(name = "director_id")
+    private Director director;
+
     @OneToMany(mappedBy = "movie")
     private List<Actor> actors;
+
+    @OneToMany(mappedBy = "movie")
+    private List<City> cities;
+
+    @OneToMany(mappedBy = "movie")
+    private List<Comment> comments;
+
 }

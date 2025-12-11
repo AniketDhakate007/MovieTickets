@@ -13,6 +13,7 @@ public interface MovieService {
     List<MovieResponseDto> getAllComingSoonMovies();
 
     MovieResponseDto getMovieByMovieId(int movieId);
+    Movie getMovieById(int movieId);
 
     Movie addMovie(MovieRequestDto movieRequestDto);
 }

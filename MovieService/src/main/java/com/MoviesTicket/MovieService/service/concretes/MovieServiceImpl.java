@@ -37,16 +37,15 @@ public class MovieServiceImpl implements MovieService {
 
     @Override
     public Movie addMovie(MovieRequestDto movieRequestDto) {
-//
-//        Movie movie = Movie.builder()
-//                .movieName(movieRequestDto.getMovieName())
-//                .description(movieRequestDto.getDescription())
-//                .duration(movieRequestDto.getDuration())
-//                .releaseDate(movieRequestDto.getReleaseDate())
-//                .isDisplay(movieRequestDto.getIsInVision())
-//                .trailerUrl(movieRequestDto.getTrailerUrl())
-//                .build();
-//        return movieDao.save(movie);
-        return null;
+
+        Movie movie = Movie.builder()
+                .movieName(movieRequestDto.getMovieName())
+                .description(movieRequestDto.getDescription())
+                .duration(movieRequestDto.getDuration())
+                .releaseDate(movieRequestDto.getReleaseDate())
+                .isDisplay(movieRequestDto.getIsInVision())
+                .trailerUrl(movieRequestDto.getTrailerUrl())
+                .build();
+        return movieDao.save(movie);
     }
 }
