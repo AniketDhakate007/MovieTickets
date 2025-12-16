@@ -27,6 +27,8 @@ public class Movie {
     private int duration;
     private Date releaseDate;
     private boolean isDisplay;
+
+    @Column(name = "movie_trailer_url")
     private String trailerUrl;
 
     @ManyToOne

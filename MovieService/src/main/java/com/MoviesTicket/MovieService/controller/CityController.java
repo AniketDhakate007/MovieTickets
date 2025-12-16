@@ -25,7 +25,7 @@ public class CityController {
         return cityService.getCitiesByMovieId(movieId);
     }
 
-    @GetMapping("addCity")
+    @PostMapping("addCity")
     public void add(@RequestBody CityRequestDto cityRequestDto) {
         cityService.add(cityRequestDto);
     }

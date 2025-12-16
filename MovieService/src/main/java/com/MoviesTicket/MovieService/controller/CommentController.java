@@ -28,12 +28,12 @@ public class CommentController {
         return commentService.getNumberOfCommentsByMovieId(movieId);
     }
 
-    @GetMapping("add")
+    @PostMapping("add")
     Comment addComment(@RequestBody CommentRequestDto comment) {
         return commentService.addComment(comment);
     }
 
-    @PostMapping("delete")
+    @DeleteMapping("delete")
     public void deleteComment(@RequestBody DeleteCommentRequestDto deleteCommentRequestDto) {
         commentService.deleteComment(deleteCommentRequestDto);
     }

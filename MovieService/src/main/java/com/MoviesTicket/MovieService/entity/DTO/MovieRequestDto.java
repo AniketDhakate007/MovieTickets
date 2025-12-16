@@ -23,6 +23,7 @@ public class MovieRequestDto {
     private Boolean isInVision;
     private int categoryId;
     private int directorId;
+    private String imageUrl;
     private List<Integer> actors;
     private List<Integer> cities;
     private String userAccessToken;

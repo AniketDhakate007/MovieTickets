@@ -1,5 +1,6 @@
 package com.MoviesTicket.MovieService.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -10,6 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@Builder
 @Table(name = "movie_image")
 public class MovieImage {
 
@@ -20,5 +22,6 @@ public class MovieImage {
     private String imageUrl;
 
     @OneToOne
+    @JsonIgnore
     private Movie movie;
 }

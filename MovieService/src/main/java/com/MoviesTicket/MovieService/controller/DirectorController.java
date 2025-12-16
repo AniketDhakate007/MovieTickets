@@ -4,10 +4,7 @@ import com.MoviesTicket.MovieService.entity.DTO.DirectorRequestDto;
 import com.MoviesTicket.MovieService.entity.Director;
 import com.MoviesTicket.MovieService.service.abstracts.DirectorService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -23,7 +20,7 @@ public class DirectorController {
         return directorService.getAll();
     }
 
-    @GetMapping("add")
+    @PostMapping("add")
     public Director add(@RequestBody DirectorRequestDto directorRequestDto) {
         return directorService.add(directorRequestDto);
     }
