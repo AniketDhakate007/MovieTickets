@@ -12,6 +12,9 @@ import java.util.List;
 @Repository
 public interface MovieDao extends JpaRepository<Movie, Integer> {
 
+    // =========================
+    // 1. Displaying Movies
+    // =========================
     @Query("""
         select new com.MoviesTicket.MovieService.entity.DTO.MovieResponseDto(
             m.movieId,
@@ -23,16 +26,22 @@ public interface MovieDao extends JpaRepository<Movie, Integer> {
             c.categoryId,
             c.categoryName,
             i.imageUrl,
-            m.trailerUrl
+            m.trailerUrl,
+            d.directorName
         )
         from Movie m
         inner join m.category c
+        inner join m.director d
         inner join m.image i
         where m.isDisplay = true
         and m.releaseDate <= current_date
     """)
     List<MovieResponseDto> getAllDisplayingMovies();
 
+
+    // =========================
+    // 2. Coming Soon Movies
+    // =========================
     @Query("""
         select new com.MoviesTicket.MovieService.entity.DTO.MovieResponseDto(
             m.movieId,
@@ -44,16 +53,22 @@ public interface MovieDao extends JpaRepository<Movie, Integer> {
             c.categoryId,
             c.categoryName,
             i.imageUrl,
-            m.trailerUrl
+            m.trailerUrl,
+            d.directorName
         )
         from Movie m
-        inner join m.category c
         inner join m.image i
+        inner join m.director d
+        inner join m.category c
         where m.isDisplay = false
         and m.releaseDate > current_date
     """)
     List<MovieResponseDto> getAllComingSoonMovies();
 
+
+    // =========================
+    // 3. Movie By ID
+    // =========================
     @Query("""
         select new com.MoviesTicket.MovieService.entity.DTO.MovieResponseDto(
             m.movieId,
@@ -65,14 +80,17 @@ public interface MovieDao extends JpaRepository<Movie, Integer> {
             c.categoryId,
             c.categoryName,
             i.imageUrl,
-            m.trailerUrl 
+            m.trailerUrl,
+            d.directorName
         )
         from Movie m
-        inner join m.category c
         inner join m.image i
+        inner join m.director d
+        inner join m.category c
         where m.movieId = :movieId
     """)
     MovieResponseDto getMovieById(@Param("movieId") int movieId);
+
 
     Movie getMovieByMovieId(int movieId);
 }

@@ -11,12 +11,11 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/movie/movies")
+@RequestMapping("/api/movie/movies/")
 @RequiredArgsConstructor
 public class MovieController {
 
-    @Autowired
-    private MovieService movieService;
+    private final MovieService movieService;
 
     @GetMapping("displayingMovies")
     public List<MovieResponseDto> getAllDisplayingMovies(){

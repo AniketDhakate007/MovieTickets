@@ -26,6 +26,4 @@ public class MovieResponseDto implements Serializable {
 
     private String directorName;
 
-//    private List<Actor> actors;
-
 }

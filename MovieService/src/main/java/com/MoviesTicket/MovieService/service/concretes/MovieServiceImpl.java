@@ -4,7 +4,10 @@ import com.MoviesTicket.MovieService.dao.MovieDao;
 import com.MoviesTicket.MovieService.entity.Category;
 import com.MoviesTicket.MovieService.entity.DTO.MovieRequestDto;
 import com.MoviesTicket.MovieService.entity.DTO.MovieResponseDto;
+import com.MoviesTicket.MovieService.entity.Director;
 import com.MoviesTicket.MovieService.entity.Movie;
+import com.MoviesTicket.MovieService.service.abstracts.CategoryService;
+import com.MoviesTicket.MovieService.service.abstracts.DirectorService;
 import com.MoviesTicket.MovieService.service.abstracts.MovieService;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
@@ -17,8 +20,10 @@ import java.util.List;
 @RequiredArgsConstructor
 public class MovieServiceImpl implements MovieService {
 
-    @Autowired
-    private MovieDao movieDao;
+
+    private final MovieDao movieDao;
+    private final CategoryService categoryService;
+    private final DirectorService directorService;
 
     @Override
     public List<MovieResponseDto> getAllDisplayingMovies(){
@@ -36,15 +41,25 @@ public class MovieServiceImpl implements MovieService {
     }
 
     @Override
+    public Movie getMovieById(int movieId) {
+        return movieDao.getMovieByMovieId(movieId);
+    }
+
+    @Override
     public Movie addMovie(MovieRequestDto movieRequestDto) {
+
+        Category category = categoryService.getCategoryById(movieRequestDto.getCategoryId());
+        Director director = directorService.getDirectorById(movieRequestDto.getDirectorId());
 
         Movie movie = Movie.builder()
                 .movieName(movieRequestDto.getMovieName())
                 .description(movieRequestDto.getDescription())
                 .duration(movieRequestDto.getDuration())
                 .releaseDate(movieRequestDto.getReleaseDate())
-                .isDisplay(movieRequestDto.getIsInVision())
                 .trailerUrl(movieRequestDto.getTrailerUrl())
+                .category(category)
+                .director(director)
+                .isDisplay(movieRequestDto.getIsInVision())
                 .build();
         return movieDao.save(movie);
     }

@@ -7,7 +7,6 @@ import com.MoviesTicket.MovieService.entity.Movie;
 import com.MoviesTicket.MovieService.service.abstracts.ActorService;
 import com.MoviesTicket.MovieService.service.abstracts.MovieService;
 import lombok.RequiredArgsConstructor;
-import org.apache.kafka.common.message.ShareFetchResponseDataJsonConverter;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

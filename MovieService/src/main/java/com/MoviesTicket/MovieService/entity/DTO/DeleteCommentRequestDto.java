@@ -1,18 +1,14 @@
 package com.MoviesTicket.MovieService.entity.DTO;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.util.List;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
-public class ActorRequestDto{
-    private int movieId;
-    private List<String> actorNameList;
+public class DeleteCommentRequestDto {
+
+    private int commentId;
     private String token;
 }
