@@ -1,10 +1,17 @@
+server:
+  port: 8081
+
 spring:
   application:
     name: userService
 
   data:
     mongodb:
-      uri: ${MONGODB_URI}
+      uri: mongodb+srv://adhakate344:UJKFUjqFsVou5WGr@cluster0.nek1m.mongodb.net/userDb
 
   config:
     import: optional:file:.env
+
+jwt:
+  secret:
+    key: ${JWT_KEY}
