@@ -1,64 +1,78 @@
 package com.MoviesTicket.userService.security;
 
-import com.MoviesTicket.userService.entity.Claim;
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.lang.Strings;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import javax.crypto.SecretKey;
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-
+@Component
 public class TokenVerifierFilter extends OncePerRequestFilter {
 
+    @Value("${jwt.secret}")
+    private String secret;
+
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        return request.getRequestURI().contains("/api/user/auth/");
+    }
 
-        String token = request.getHeader("Authorization");
+    @Override
+    protected void doFilterInternal(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            FilterChain filterChain
+    ) throws ServletException, IOException {
 
-        if (Strings.hasText(token) && token.startsWith("Bearer ")){
-            token = token.replace("Bearer ", "");
-            String key = "${jwt.secret.key}";
+        String header = request.getHeader("Authorization");
 
-            try{
-                Jws<Claims> jwsClaims = Jwts.parser()
-                        .setSigningKey(Keys.hmacShaKeyFor(key.getBytes()))
-                        .build().parseClaimsJws(token);
-
-                Claims body = jwsClaims.getBody();
-                String email = body.getSubject();
-
-                List<Map<String, String>> authorities = (List<Map<String, String>>) body.get("authorities");
-
-                Set<SimpleGrantedAuthority> grantedAuthorities = authorities.stream().map(a ->
-                        new SimpleGrantedAuthority("ROLE_"+ a.get("authority"))
-                        ).collect(Collectors.toSet());
-
-                Authentication authentication = new UsernamePasswordAuthenticationToken(email, null, grantedAuthorities);
-                SecurityContextHolder.getContext().setAuthentication(authentication);
-                filterChain.doFilter(request, response);
-            }
-            catch (JwtException e){
-                throw new RuntimeException("Token Invalid");
-            }
-        }
-        else {
-            filterChain.doFilter(request, response);
+        if (header == null || !header.startsWith("Bearer ")) {
+            filterChain.doFilter(request, response); // ✅ DO NOT BLOCK
+            return;
         }
 
+        try {
+            SecretKey key = Keys.hmacShaKeyFor(secret.getBytes());
+
+            Claims claims = Jwts.parser()
+                    .verifyWith(key)
+                    .build()
+                    .parseSignedClaims(header.substring(7))
+                    .getPayload();
+
+            String email = claims.getSubject();
+            List<String> roles = claims.get("roles", List.class);
+
+            Set<SimpleGrantedAuthority> authorities =
+                    roles.stream()
+                            .map(SimpleGrantedAuthority::new)
+                            .collect(Collectors.toSet());
+
+            Authentication authentication =
+                    new UsernamePasswordAuthenticationToken(email, null, authorities);
+
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        } catch (JwtException e) {
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            return;
+        }
+
+        filterChain.doFilter(request, response);
     }
 }

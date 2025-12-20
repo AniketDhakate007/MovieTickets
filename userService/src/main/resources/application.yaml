@@ -13,5 +13,5 @@ spring:
     import: optional:file:.env
 
 jwt:
-  secret:
-    key: ${JWT_KEY}
+  secret: ThisIsAVeryStrongJwtSecretKeyWithAtLeast32Chars
+

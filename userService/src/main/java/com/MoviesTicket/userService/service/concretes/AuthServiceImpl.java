@@ -7,7 +7,6 @@ import com.MoviesTicket.userService.security.JwtProviderService;
 import com.MoviesTicket.userService.service.abstracts.AuthService;
 import com.MoviesTicket.userService.service.abstracts.UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -24,26 +23,50 @@ public class AuthServiceImpl implements AuthService {
     private final AuthenticationManager authenticationManager;
     private final JwtProviderService jwtProvider;
     private final UserService userService;
+
     @Override
     public AuthDTO login(LoginDTO loginDTO) {
 
-        Authentication authenticate = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
-                loginDTO.getEmail(),
-                loginDTO.getPassword()
-        ));
+        System.out.println("=== LOGIN START ===");
+        System.out.println("EMAIL: " + loginDTO.getEmail());
 
-        SecurityContextHolder.getContext().setAuthentication(authenticate);
-        String token = jwtProvider.generateToken(authenticate);
+        try {
+            Authentication authentication =
+                    authenticationManager.authenticate(
+                            new UsernamePasswordAuthenticationToken(
+                                    loginDTO.getEmail(),
+                                    loginDTO.getPassword()
+                            )
+                    );
 
-        User user = userService.getUserByEmail(loginDTO.getEmail());
+            System.out.println("AUTHENTICATION SUCCESS");
 
-        return AuthDTO.builder()
-                .userId(user.getUserId())
-                .fullName(user.getFullName())
-                .email(loginDTO.getEmail())
-                .token(token)
-                .roles(authenticate.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList()))
-                .build();
+            SecurityContextHolder.getContext().setAuthentication(authentication);
 
+            System.out.println("GENERATING TOKEN...");
+            String token = jwtProvider.generateToken(authentication);
+            System.out.println("TOKEN GENERATED");
+
+            User user = userService.getUserByEmail(loginDTO.getEmail());
+
+            return AuthDTO.builder()
+                    .userId(user.getUserId())
+                    .fullName(user.getFullName())
+                    .email(user.getEmail())
+                    .token(token)
+                    .roles(
+                            authentication.getAuthorities()
+                                    .stream()
+                                    .map(a -> a.getAuthority())
+                                    .toList()
+                    )
+                    .build();
+
+        } catch (Exception e) {
+            System.out.println("LOGIN FAILED WITH EXCEPTION:");
+            e.printStackTrace();
+            throw e;
+        }
     }
+
 }

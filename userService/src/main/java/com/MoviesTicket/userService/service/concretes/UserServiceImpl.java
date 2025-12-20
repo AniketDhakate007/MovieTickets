@@ -38,7 +38,9 @@ public class UserServiceImpl implements UserService {
                 .email(registerDTO.getEmail())
                 .password(passwordEncoder.encode(registerDTO.getPassword()))
                 .fullName(registerDTO.getCustomerName())
-                .claim(claim)
+                .claim(Claim.builder()
+                        .claimName("CUSTOMER")
+                        .build())
                 .build();
 
         userDao.insert(user);
