@@ -13,6 +13,7 @@ import com.MoviesTicket.MovieService.service.abstracts.DirectorService;
 import com.MoviesTicket.MovieService.service.abstracts.MovieService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.List;
 
@@ -21,10 +22,13 @@ import java.util.List;
 public class MovieServiceImpl implements MovieService {
 
 
+    private static final String BASE_URL = "http://localhost:8081/api/user";
     private final MovieDao movieDao;
     private final CategoryService categoryService;
     private final DirectorService directorService;
     private final MovieImageDao movieImageDao;
+    private final WebClient.Builder webClientBuilder;
+
 
     @Override
     public List<MovieResponseDto> getAllDisplayingMovies(){
@@ -49,30 +53,42 @@ public class MovieServiceImpl implements MovieService {
     @Override
     public Movie addMovie(MovieRequestDto movieRequestDto) {
 
-        Category category = categoryService.getCategoryById(movieRequestDto.getCategoryId());
-        Director director = directorService.getDirectorById(movieRequestDto.getDirectorId());
+        Boolean result = webClientBuilder.build().get()
+                .uri(BASE_URL+"/users/isUserAdmin")
+                .header("Authorization", "Bearer " + movieRequestDto.getUserAccessToken())
+                .retrieve()
+                .bodyToMono(Boolean.class)
+                .block();
 
-        Movie movie = Movie.builder()
-                .movieName(movieRequestDto.getMovieName())
-                .description(movieRequestDto.getDescription())
-                .duration(movieRequestDto.getDuration())
-                .releaseDate(movieRequestDto.getReleaseDate())
-                .trailerUrl(movieRequestDto.getTrailerUrl())
-                .category(category)
-                .director(director)
-                .isDisplay(movieRequestDto.getIsInVision())
-                .build();
-        Movie savedMovie = movieDao.save(movie);
+        if (result){
+
+            Category category = categoryService.getCategoryById(movieRequestDto.getCategoryId());
+            Director director = directorService.getDirectorById(movieRequestDto.getDirectorId());
+
+            Movie movie = Movie.builder()
+                    .movieName(movieRequestDto.getMovieName())
+                    .description(movieRequestDto.getDescription())
+                    .duration(movieRequestDto.getDuration())
+                    .releaseDate(movieRequestDto.getReleaseDate())
+                    .trailerUrl(movieRequestDto.getTrailerUrl())
+                    .category(category)
+                    .director(director)
+                    .isDisplay(movieRequestDto.getIsInVision())
+                    .build();
+            Movie savedMovie = movieDao.save(movie);
 
 
-        MovieImage image = MovieImage.builder()
-                .imageUrl(movieRequestDto.getImageUrl())
-                .movie(savedMovie)
-                .build();
+            MovieImage image = MovieImage.builder()
+                    .imageUrl(movieRequestDto.getImageUrl())
+                    .movie(savedMovie)
+                    .build();
 
-        movieImageDao.save(image);
-        savedMovie.setImage(image);
+            movieImageDao.save(image);
+            savedMovie.setImage(image);
 
-        return savedMovie;
+            return savedMovie;
+        }
+
+        throw new RuntimeException("error adding movie");
     }
 }

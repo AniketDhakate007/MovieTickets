@@ -8,6 +8,7 @@ import com.MoviesTicket.MovieService.service.abstracts.ActorService;
 import com.MoviesTicket.MovieService.service.abstracts.MovieService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.List;
 
@@ -17,6 +18,8 @@ public class ActorServiceImpl implements ActorService{
 
     private final ActorDao actorDao;
     private final MovieService movieService;
+    private final WebClient.Builder webClientBuilder;
+
 
     @Override
     public List<Actor> getActorsByMovieId(int movieId) {
@@ -30,14 +33,25 @@ public class ActorServiceImpl implements ActorService{
 
     @Override
     public void addActors(ActorRequestDto actorRequestDto) {
-        Movie movie = movieService.getMovieById(actorRequestDto.getMovieId());
 
-        for (String actorName: actorRequestDto.getActorNameList()){
-            Actor actor = Actor.builder()
-                    .actorName(actorName)
-                    .movie(movie)
-                    .build();
-            actorDao.save(actor);
+        Boolean result = webClientBuilder.build().get()
+                .uri("${BASE_URL}/users/isUserAdmin")
+                .header("Authorization","Bearer " + actorRequestDto.getToken())
+                .retrieve()
+                .bodyToMono(Boolean.class)
+                .block();
+
+        if (result){
+            Movie movie = movieService.getMovieById(actorRequestDto.getMovieId());
+
+            for (String actorName: actorRequestDto.getActorNameList()){
+                Actor actor = Actor.builder()
+                        .actorName(actorName)
+                        .movie(movie)
+                        .build();
+                actorDao.save(actor);
+
+            }
         }
     }
 

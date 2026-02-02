@@ -1,5 +1,6 @@
 package com.MoviesTicket.MovieService.service.concretes;
 
+import com.MoviesTicket.MovieService.config.WebClientConfig;
 import com.MoviesTicket.MovieService.dao.CommentDao;
 import com.MoviesTicket.MovieService.entity.Comment;
 import com.MoviesTicket.MovieService.entity.DTO.CommentRequestDto;
@@ -12,6 +13,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import org.springframework.data.domain.Pageable;
+import org.springframework.web.reactive.function.client.WebClient;
+
 import java.util.List;
 
 @Service
@@ -20,6 +23,7 @@ public class CommentServiceImpl implements CommentService {
 
     private final CommentDao commentDao;
     private final MovieService movieService;
+    private final WebClient.Builder webClientBuilder;
 
 
     @Override
@@ -30,21 +34,44 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public void deleteComment(DeleteCommentRequestDto deleteCommentRequestDto) {
-        commentDao.deleteById(deleteCommentRequestDto.getCommentId());
+
+        Boolean result = webClientBuilder.build().get()
+                .uri("http://USERSERVICE/api/user/users/isUserCustomer")
+                .header("Authorization","Bearer " + deleteCommentRequestDto.getToken())
+                .retrieve()
+                .bodyToMono(Boolean.class)
+                .block();
+
+        if (result){
+            commentDao.deleteById(deleteCommentRequestDto.getCommentId());
+        }
+
     }
 
     @Override
     public Comment addComment(CommentRequestDto commentRequestDto) {
-        Movie movie = movieService.getMovieById(commentRequestDto.getMovieId());
 
-        Comment comment = Comment.builder()
-                .commentByUserId(commentRequestDto.getCommentByUserId())
-                .commentBy(commentRequestDto.getCommentBy())
-                .commentText(commentRequestDto.getCommentText())
-                .movie(movie)
-                .build();
+        Boolean result = webClientBuilder.build().get()
+                .uri("${BASE_URL}/users/isUserCustomer")
+                .header("Authorization","Bearer " + commentRequestDto.getToken())
+                .retrieve()
+                .bodyToMono(Boolean.class)
+                .block();
 
-        return commentDao.save(comment);
+        if (result){
+            Movie movie = movieService.getMovieById(commentRequestDto.getMovieId());
+
+            Comment comment = Comment.builder()
+                    .commentByUserId(commentRequestDto.getCommentByUserId())
+                    .commentBy(commentRequestDto.getCommentBy())
+                    .commentText(commentRequestDto.getCommentText())
+                    .movie(movie)
+                    .build();
+
+            return commentDao.save(comment);
+        }
+        throw new RuntimeException("could not add comment");
+
     }
 
     @Override

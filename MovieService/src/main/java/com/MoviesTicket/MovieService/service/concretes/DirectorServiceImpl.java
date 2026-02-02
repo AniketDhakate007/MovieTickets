@@ -7,6 +7,7 @@ import com.MoviesTicket.MovieService.service.abstracts.DirectorService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.List;
 
@@ -15,6 +16,8 @@ import java.util.List;
 public class DirectorServiceImpl implements DirectorService {
 
     private final DirectorDao directorDao;
+    private final WebClient.Builder webClientBuilder;
+
     @Override
     public List<Director> getAll() {
         return directorDao.findAll();
@@ -27,9 +30,20 @@ public class DirectorServiceImpl implements DirectorService {
 
     @Override
     public Director add(DirectorRequestDto directorRequestDto) {
-        Director director = Director.builder()
-                .directorName(directorRequestDto.getDirectorName())
-                .build();
-        return directorDao.save(director);
+
+        Boolean result = webClientBuilder.build().get()
+                .uri("${BASE_URL}/users/isUserAdmin")
+                .header("Authorization", "Bearer " + directorRequestDto.getToken())
+                .retrieve()
+                .bodyToMono(Boolean.class)
+                .block();
+
+        if (result){
+            Director director = Director.builder()
+                    .directorName(directorRequestDto.getDirectorName())
+                    .build();
+            return directorDao.save(director);
+        }
+        throw new RuntimeException("Could not add director");
     }
 }

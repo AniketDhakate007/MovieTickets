@@ -8,6 +8,7 @@ import com.MoviesTicket.MovieService.service.abstracts.CityService;
 import com.MoviesTicket.MovieService.service.abstracts.MovieService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.List;
 
@@ -17,6 +18,7 @@ public class CityServiceImpl implements CityService {
 
     private final CityDao cityDao;
     private final MovieService movieService;
+    private final WebClient.Builder webClientBuilder;
 
     @Override
     public List<City> getCitiesByMovieId(int movieId) {
@@ -30,14 +32,26 @@ public class CityServiceImpl implements CityService {
 
     @Override
     public void add(CityRequestDto cityRequestDto) {
-        Movie movie = movieService.getMovieById(cityRequestDto.getMovieId());
 
-        for(String cityName: cityRequestDto.getCityNameList()){
-            City city = City.builder()
-                    .cityName(cityName)
-                    .movie(movie)
-                    .build();
-            cityDao.save(city);
+        Boolean result = webClientBuilder.build().get()
+                .uri("${BASE_URL}/users/isUserAdmin")
+                .header("Authorization","Bearer " + cityRequestDto.getToken())
+                .retrieve()
+                .bodyToMono(Boolean.class)
+                .block();
+
+        if (result){
+            Movie movie = movieService.getMovieById(cityRequestDto.getMovieId());
+
+            for(String cityName: cityRequestDto.getCityNameList()){
+                City city = City.builder()
+                        .cityName(cityName)
+                        .movie(movie)
+                        .build();
+                cityDao.save(city);
+            }
+
         }
+
     }
 }
